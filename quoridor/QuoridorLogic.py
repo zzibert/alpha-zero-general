@@ -13,40 +13,80 @@ x is the column, y is the row.
 
 class Board():
 
-    _white_starting_position = [16, 8]
-    _black_starting_position = [0, 8]
+    # All possible directions
+    _moves = [
+            "Right",
+            "Right-Jump",
+            "Right-Jump-Up",
+            "Right-Jump-Down",
 
-    # list of all directions on the board, as (x,y) offsets
-    _directions = [
-        (0, 2),     # Right
-        (0, 4),     # Right-Jump
-        (-2, 2),    # Right-Jump-Up
-        (2, 2)      # Right-Jump-Down
+            "Down",
+            "Down-Jump",
+            "Down-Jump-Left",
+            "Down-Jump-Right",
 
-        (2, 0),      # Down
-        (4, 0),     # Down-Jump
-        (2, -2),    # Down-Jump-Left
-        (2, 2),     # Down-Jump-Right
+            "Left",
+            "Left-Jump",
+            "Left-Jump-Up",
+            "Left-Jump-Down",
 
-        (0, -2)     # Left
-        (0, -4),    # Left-Jump
-        (-2, -2),   # Left-Jump-Up
-        (2, -2),    # Left-Jump-Down
+            "Up",
+            "Up-Jump",
+            "Up-Jump-Left",
+            "Up-Jump-Right",
+        ]
 
-        (-2, 0),    # Up
-        (-4, 0),    # Up-Jump
-        (-2, -2),   # Up-Jump-Left
-        (-2, 2),    # Up-Jump-Right
-    ]
+    # map direction to (x,y) offsets
+    _directionToOffset = {
+        "Right": (0, 2),                 # Right
+        "Right-Jump": (0, 4),            # Right-Jump
+        "Right-Jump-Up": (-2, 2),        # Right-Jump-Up
+        "Right-Jump-Down": (2, 2),       # Right-Jump-Down
 
-    def __init__(self, n):
+        "Down": (2, 0),                  # Down
+        "Down-Jump": (4, 0),             # Down-Jump
+        "Down-Jump-Left": (2, -2),       # Down-Jump-Left
+        "Down-Jump-Right": (2, 2),       # Down-Jump-Right
+
+        "Left": (0, -2),                 # Left
+        "Left-Jump": (0, -4),            # Left-Jump
+        "Left-Jump-Up": (-2, -2),        # Left-Jump-Up
+        "Left-Jump-Down": (2, -2),       # Left-Jump-Down
+
+        "Up": (-2, 0),                   # Up
+        "Up-Jump": (-4, 0),              # Up-Jump
+        "Up-Jump-Left":  (-2, -2),       # Up-Jump-Left
+        "Up-Jump-Right": (-2, 2),        # Up-Jump-Right
+    }
+
+    def __init__(self):
         "Set up initial board configuration."
+        # 0 - white, 1 - back
+        self.turn = 0
 
-        self.n = n
-        # Create the empty board array
-        self.pieces = [None]*self.n
-        for i in range(self.n):
-            self.pieces[i] = [0]*self.n
+        # white player starting position
+        self.white_player = [16, 8]
+        self.white_tiles = 10
 
-        # Set up the initial black and white piece
+        # black player starting position
+        self.black_player = [0, 8]
+        self.black_tiles = 10
+
+        # State of tile placement
+        self.occupancy = {}
+
+
+    def get_valid_moves(self):
+        """Returns all the valid moves for the given color.
+        (1 for white, -1 for black)     
+        """
+        moves = Set()
+
+    def isWithinBounds(self, x, y):
+        x >= 0 & x < 17 & y >= 0 & y < 17
+
+
+
+
+    
         
