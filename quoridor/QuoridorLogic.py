@@ -40,10 +40,10 @@ class DirectionCondition():
         self.not_blocked = not_blocked
 
     def is_condition_met(self, player_position, opponent_position, occupancy):
-        raise NotImplementedError("Subclasses must implement move()")
+        
     
     def is_direction_blocked(self, relative, player_position, occupancy):
-        
+
         
 
         
