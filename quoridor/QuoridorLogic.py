@@ -40,20 +40,41 @@ class DirectionCondition():
         self.not_blocked = not_blocked
 
     def is_condition_met(self, player_position, opponent_position, occupancy):
-        
+        raise NotImplementedError("Subclasses must implement move()")
     
     def is_direction_blocked(self, relative, player_position, occupancy):
 
-        
-
-        
-
 class Direction():
-    def __init__(self, name, relative_position):
+    def __init__(self, name, relative_position, direction_condition):
         self.name = name
         self.relative_position = relative_position
+        self.direction_condition = direction_condition
 
-    def 
+class DirectionType(Enum):
+    LEFT = Direction("Left", RelativePosition(0, -2))
+    LEFT_JUMP = Direction("Left-Jump", RelativePosition(0, -4))
+    LEFT_JUMP_UP = Direction("Left-Jump-Up", RelativePosition(-2, -2))
+    LEFT_JUMP_DOWN = Direction("Left-Jump-Down", RelativePosition(2, -2))
+
+    RIGHT = Direction("Right", RelativePosition(0, 2))
+    RIGHT_JUMP = Direction("Right-Jump", RelativePosition(0, 4))
+    RIGHT_JUMP_UP = Direction("Right-Jump-Up", RelativePosition(-2, 2))
+    RIGHT_JUMP_DOWN = Direction("Right-Jump-Down", RelativePosition(2, 2))
+
+    UP = Direction("Up", RelativePosition(-2, 0))
+    UP_JUMP = Direction("Up-Jump", RelativePosition(-4, 0))
+    UP_JUMP_LEFT = Direction("Up-Jump-Right", RelativePosition(-2, -2))
+    UP_JUMP_RIGHT = Direction("Up-Jump-Left", RelativePosition(-2, 2))
+
+    DOWN = Direction("Down", RelativePosition(2, 0))
+    DOWN_JUMP = Direction("Down-Jump", RelativePosition(4, 0))
+    DOWN_JUMP_LEFT = Direction("Down-Jump-Left", RelativePosition(2, -2))
+    DOWN_JUMP_RIGHT = Direction("Down-Jump-Right", RelativePosition(2, 2))
+
+
+
+    
+
 
 
 
