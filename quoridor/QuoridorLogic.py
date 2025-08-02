@@ -12,6 +12,7 @@ x is the column, y is the row.
 '''
 
 from enum import Enum
+from typing import List, Set
 
 class PlayerId(Enum):
     WHITE = 0
@@ -29,7 +30,7 @@ class Position():
         return self.x == other.x and self.y == other.y
     
     def __hash__(self) -> int:
-        return hash({self.x, self.y})
+        return hash((self.x, self.y))
 
     def is_within_bounds(self) -> bool:
         return self.x >= 0 and self.x < 17 and self.y >= 0 and self.y < 17
@@ -202,8 +203,8 @@ class DirectionType(Enum):
         not_blocked=[RelativePosition(1, 0), RelativePosition(2, 1)]
     )
 
-class Player():
-    def __init__(self, position, tiles):
+class Player ():
+    def __init__(self, position: Position, tiles):
         self.position = position
         self.tiles = tiles
 
@@ -214,48 +215,66 @@ class Player():
         self.tiles = self.tiles - 1
 
 
+class Action ():
+    def __init__(self, isMove: bool, position, isHorizontal=None):
+        self.isMove = isMove
+        self.position = position
+        self.isHorizontal = isHorizontal
 
-class Board():
+class Tile ():
+    def __init__(self, isHorizontal: bool, position: Position):
+        self.isHorizontal = isHorizontal
+        self.position = position
+
+    def blocks(self) -> List[Position]:
+        if self.isHorizontal:
+            return [Position(x=self.x, y=self.y+i) for i in range(3)]
+        else:
+            return [Position(x=self.x+i, y=self.y) for i in range(3)]
+        
+    
+    def occupancy(self) -> Set[Position]:
+        block_list = self.blocks()
+        return set(block_list)
 
 
-    # All possible directions
-    _moves = {
-            "Right": DirectionType.RIGHT,
-            "Right-Jump": DirectionType.RIGHT_JUMP,
-            "Right-Jump-Up": DirectionType.RIGHT_JUMP_UP,
-            "Right-Jump-Down": DirectionType.RIGHT_JUMP_DOWN,
 
-            "Down": DirectionType.DOWN,
-            "Down-Jump": DirectionType.DOWN_JUMP,
-            "Down-Jump-Left": DirectionType.DOWN_JUMP_LEFT,
-            "Down-Jump-Right": DirectionType.DOWN_JUMP_RIGHT,
 
-            "Left": DirectionType.LEFT,
-            "Left-Jump": DirectionType.LEFT_JUMP,
-            "Left-Jump-Up": DirectionType.LEFT_JUMP_UP,
-            "Left-Jump-Down": DirectionType.LEFT_JUMP_DOWN,
 
-            "Up": DirectionType.UP,
-            "Up-Jump": DirectionType.UP_JUMP,
-            "Up-Jump-Left": DirectionType.UP_JUMP_LEFT,
-            "Up-Jump-Right": DirectionType.UP_JUMP_RIGHT,
-    }
+class Board ():
+    def __init__(self, white_player, black_player, occupancy):
+        self.white_player=white_player
+        self.black_player=black_player
+        self.occupancy=occupancy
 
-    def __init__(self):
-        "Set up initial board configuration."
-        # 0 - white, 1 - back
-        self.turn = 0
+    def make_action(self, player_id, action) -> Board:
+        if action.isMove:
+            return make_move(player_id, action.position)
+        else:
+            return place_tile(player_id, action.isHorizontal, action.position)
+        
+    def make_move(self, player_id: int, position: Position):
+        if (player_id == PlayerId.WHITE):
+            white_player = Player(position=position, tiles=self.white_player.tiles)
+            return Board(
+                white_player=white_player,
+                black_player=self.black_player,
+                occupancy=self.occupancy
+            )
+        else:
+            black_player = Player(position=position, tiles=self.black_player.tiles)
+            return Board(
+                white_player=self.white_player,
+                black_player=black_player,
+                occupancy=self.occupancy
+            )
+        
+    def place_tile(self, player_id, isHorizontal, tile_position):
 
-        # white player starting position
-        self.white_player = [16, 8]
-        self.white_tiles = 10
 
-        # black player starting position
-        self.black_player = [0, 8]
-        self.black_tiles = 10
 
-        # State of tile placement
-        self.occupancy = {}
+        
+
 
 
     def get_valid_moves(self):

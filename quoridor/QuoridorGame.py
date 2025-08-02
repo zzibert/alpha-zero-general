@@ -13,12 +13,16 @@ class QuoridorGame(Game):
         return b
     
     def getNextState(self, board, player, action):
-        nextBoard = board.makeAction(player, action)
+        nextBoard = board.make_action(player, action)
 
         return (nextBoard, -player)
     
     def getValidMoves(self, board, player):
         return board.getValidMoves(player)
+    
+    def getActionSize(self):
+        # return all possible moves and tile placements
+        pass
 
     
     def getGameEnded(self, board, player):
