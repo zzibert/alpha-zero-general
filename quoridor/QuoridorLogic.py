@@ -13,20 +13,42 @@ x is the column, y is the row.
 
 from enum import Enum
 
+class PlayerId(Enum):
+    WHITE = 0
+    BLACK = 1
+
 class Position():
-    def __init__(self, x, y):
+    def __init__(self, x: int, y: int):
         self.x = x
         self.y = y
 
-    def isWithinBounds(self):
-        self.x >= 0 & self.x < 17 & self.y >= 0 & self.y < 17
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Position):
+            return NotImplemented
+        
+        return self.x == other.x and self.y == other.y
+    
+    def __hash__(self) -> int:
+        return hash({self.x, self.y})
+
+    def is_within_bounds(self) -> bool:
+        return self.x >= 0 and self.x < 17 and self.y >= 0 and self.y < 17
+
+white_starting_position = Position(16, 8)
+black_starting_position = Position(0, 8)
+
+def get_starting_position(player_id) -> Position:
+    if (player_id == PlayerId.WHITE):
+        return white_starting_position
+    else: 
+        return black_starting_position
 
 class RelativePosition():
-    def __init__(self, dx, dy):
+    def __init__(self, dx: int, dy: int):
         self.dx = dx
         self.dy = dy
 
-    def transform(self, position):
+    def transform(self, position: Position) -> Position:
         return Position(
             x=position.x + self.dx,
             y=position.y + self.dy
@@ -39,13 +61,22 @@ class DirectionCondition():
         self.blocked = blocked
         self.not_blocked = not_blocked
 
-    def is_condition_met(self, player_position, opponent_position, occupancy):
-        raise NotImplementedError("Subclasses must implement move()")
+    # all(x > 0 for x in numbers)
+    def is_condition_met(self, player_position: Position, opponent_position: Position, occupancy) -> bool:
+        return (
+            all(relative.transform(player_position) == opponent_position for relative in self.occupied) and
+            all(relative.transform(player_position) != opponent_position for relative in self.not_occupied) and
+            all(self.is_direction_blocked(relative, player_position, occupancy) for relative in self.blocked) and
+            all(relative.transform(player_position) not in occupancy for relative in self.not_blocked)
+        )
+
     
-    def is_direction_blocked(self, relative, player_position, occupancy):
+    def is_direction_blocked(self, relative: RelativePosition, player_position: Position, occupancy) -> bool:
+        potential_position = relative.transform(player_position)
+        return potential_position in occupancy or not potential_position.is_within_bounds()
 
 class Direction():
-    def __init__(self, name, relative_position, occupied=[], not_occupied=[], blocked=[], not_blocked=[]):
+    def __init__(self, name, relative_position: RelativePosition, occupied=[], not_occupied=[], blocked=[], not_blocked=[]):
         self.name = name
         self.relative_position = relative_position
         self.condition = DirectionCondition(occupied=occupied, not_occupied=not_occupied, blocked=blocked, not_blocked=not_blocked)
@@ -186,50 +217,28 @@ class Player():
 
 class Board():
 
+
     # All possible directions
-    _moves = [
-            "Right",
-            "Right-Jump",
-            "Right-Jump-Up",
-            "Right-Jump-Down",
+    _moves = {
+            "Right": DirectionType.RIGHT,
+            "Right-Jump": DirectionType.RIGHT_JUMP,
+            "Right-Jump-Up": DirectionType.RIGHT_JUMP_UP,
+            "Right-Jump-Down": DirectionType.RIGHT_JUMP_DOWN,
 
-            "Down",
-            "Down-Jump",
-            "Down-Jump-Left",
-            "Down-Jump-Right",
+            "Down": DirectionType.DOWN,
+            "Down-Jump": DirectionType.DOWN_JUMP,
+            "Down-Jump-Left": DirectionType.DOWN_JUMP_LEFT,
+            "Down-Jump-Right": DirectionType.DOWN_JUMP_RIGHT,
 
-            "Left",
-            "Left-Jump",
-            "Left-Jump-Up",
-            "Left-Jump-Down",
+            "Left": DirectionType.LEFT,
+            "Left-Jump": DirectionType.LEFT_JUMP,
+            "Left-Jump-Up": DirectionType.LEFT_JUMP_UP,
+            "Left-Jump-Down": DirectionType.LEFT_JUMP_DOWN,
 
-            "Up",
-            "Up-Jump",
-            "Up-Jump-Left",
-            "Up-Jump-Right",
-        ]
-
-    # map direction to (x,y) offsets
-    _directionToOffset = {
-        "Right": (0, 2),
-        "Right-Jump": (0, 4),
-        "Right-Jump-Up": (-2, 2), 
-        "Right-Jump-Down": (2, 2),
-
-        "Down": (2, 0),
-        "Down-Jump": (4, 0),
-        "Down-Jump-Left": (2, -2),   
-        "Down-Jump-Right": (2, 2),
-
-        "Left": (0, -2),
-        "Left-Jump": (0, -4),
-        "Left-Jump-Up": (-2, -2),
-        "Left-Jump-Down": (2, -2),
-
-        "Up": (-2, 0),
-        "Up-Jump": (-4, 0),
-        "Up-Jump-Left":  (-2, -2),
-        "Up-Jump-Right": (-2, 2),
+            "Up": DirectionType.UP,
+            "Up-Jump": DirectionType.UP_JUMP,
+            "Up-Jump-Left": DirectionType.UP_JUMP_LEFT,
+            "Up-Jump-Right": DirectionType.UP_JUMP_RIGHT,
     }
 
     def __init__(self):
@@ -254,9 +263,6 @@ class Board():
         (1 for white, -1 for black)     
         """
         moves = Set()
-
-    def isWithinBounds(self, x, y):
-        x >= 0 & x < 17 & y >= 0 & y < 17
 
 
 
