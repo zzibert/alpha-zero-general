@@ -209,10 +209,12 @@ class Player ():
         self.tiles = tiles
 
     def update_position(self, position):
-        self.position = position
+        return Player(position=position, tiles=self.tiles)
+        
 
     def decrement_tiles(self):
-        self.tiles = self.tiles - 1
+        return Player(position=self.position,tiles=self.tiles-1)
+        
 
 
 class Action ():
@@ -247,11 +249,29 @@ class Board ():
         self.black_player=black_player
         self.occupancy=occupancy
 
-    def make_action(self, player_id, action) -> Board:
-        if action.isMove:
-            return make_move(player_id, action.position)
+    def get_player(self, player_id: int) -> Player:
+        if player_id == PlayerId.WHITE:
+            return self.white_player
         else:
-            return place_tile(player_id, action.isHorizontal, action.position)
+            return self.black_player
+        
+    def place_tile(self, player_id, tile: Tile):
+        new_occupancy = self.occupancy.update(tile.occupancy)
+
+        if player_id == PlayerId.WHITE:
+            return Board(
+                white_player=self.white_player.decrement_tiles(),
+                black_player=self.black_player,
+                occupancy=new_occupancy
+            )
+        else:
+            return Board(
+                white_player=self.white_player,
+                black_player=self.black_player.decrement_tiles(),
+                occupancy=new_occupancy
+            )
+        
+
         
     def make_move(self, player_id: int, position: Position):
         if (player_id == PlayerId.WHITE):
@@ -268,8 +288,14 @@ class Board ():
                 black_player=black_player,
                 occupancy=self.occupancy
             )
+    
+    def make_action(self, player_id, action):
+        if action.isMove:
+            return make_move(player_id, action.position)
+        else:
+            return place_tile(player_id, Tile(isHorizontal=action.isHorizontal, position=action.position))
         
-    def place_tile(self, player_id, isHorizontal, tile_position):
+
 
 
 
