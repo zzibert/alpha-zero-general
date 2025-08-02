@@ -45,39 +45,131 @@ class DirectionCondition():
     def is_direction_blocked(self, relative, player_position, occupancy):
 
 class Direction():
-    def __init__(self, name, relative_position, direction_condition):
+    def __init__(self, name, relative_position, occupied=[], not_occupied=[], blocked=[], not_blocked=[]):
         self.name = name
         self.relative_position = relative_position
-        self.direction_condition = direction_condition
+        self.condition = DirectionCondition(occupied=occupied, not_occupied=not_occupied, blocked=blocked, not_blocked=not_blocked)
 
 class DirectionType(Enum):
-    LEFT = Direction("Left", RelativePosition(0, -2))
-    LEFT_JUMP = Direction("Left-Jump", RelativePosition(0, -4))
-    LEFT_JUMP_UP = Direction("Left-Jump-Up", RelativePosition(-2, -2))
-    LEFT_JUMP_DOWN = Direction("Left-Jump-Down", RelativePosition(2, -2))
-
-    RIGHT = Direction("Right", RelativePosition(0, 2))
-    RIGHT_JUMP = Direction("Right-Jump", RelativePosition(0, 4))
-    RIGHT_JUMP_UP = Direction("Right-Jump-Up", RelativePosition(-2, 2))
-    RIGHT_JUMP_DOWN = Direction("Right-Jump-Down", RelativePosition(2, 2))
-
-    UP = Direction("Up", RelativePosition(-2, 0))
-    UP_JUMP = Direction("Up-Jump", RelativePosition(-4, 0))
-    UP_JUMP_LEFT = Direction("Up-Jump-Right", RelativePosition(-2, -2))
-    UP_JUMP_RIGHT = Direction("Up-Jump-Left", RelativePosition(-2, 2))
-
-    DOWN = Direction("Down", RelativePosition(2, 0))
-    DOWN_JUMP = Direction("Down-Jump", RelativePosition(4, 0))
-    DOWN_JUMP_LEFT = Direction("Down-Jump-Left", RelativePosition(2, -2))
-    DOWN_JUMP_RIGHT = Direction("Down-Jump-Right", RelativePosition(2, 2))
-
-
-
+    LEFT = Direction(
+        name="Left", 
+        relative_position=RelativePosition(0, -2),
+        not_occupied=[RelativePosition(0, -2)],
+        not_blocked=[RelativePosition(0, -1)]
+    )
     
+    LEFT_JUMP = Direction(
+        name="Left-Jump",
+        relative_position=RelativePosition(0, -4),
+        occupied=[RelativePosition(0, -2)],
+        not_blocked=[RelativePosition(0, -1),RelativePosition(0, -3)]
+    )
+    
+    LEFT_JUMP_UP = Direction(
+        name="Left-Jump-Up",
+        relative_position=RelativePosition(-2, -2),
+        occupied=[RelativePosition(0, -2)],
+        not_blocked=[RelativePosition(0, -1), RelativePosition(-1, -2)],
+        blocked=[RelativePosition(0, -3)]
+    )
 
+    LEFT_JUMP_DOWN = Direction(
+        name="Left-Jump-Down",
+        relative_position=RelativePosition(2, -2),
+        occupied=[RelativePosition(0, -2)],
+        not_blocked=[RelativePosition(0, -1), RelativePosition(1, -2)],
+        blocked=[RelativePosition(0, -3)]
+    )
 
+    RIGHT = Direction(
+        name="Right",
+        relative_position=RelativePosition(0, 2),
+        not_occupied=[RelativePosition(0, 2)],
+        not_blocked=[RelativePosition(0, 1)]
+    )
 
+    RIGHT_JUMP = Direction(
+        name="Right-Jump",
+        relative_position=RelativePosition(0, 4),
+        occupied=[RelativePosition(0, 2)],
+        not_blocked=[RelativePosition(0, 1), RelativePosition(0, 3)]
+    )
 
+    RIGHT_JUMP_UP = Direction(
+        name="Right-Jump-Up",
+        relative_position=RelativePosition(-2, 2),
+        occupied=[RelativePosition(0, 2)],
+        blocked=[RelativePosition(0, 3)],
+        not_blocked=[RelativePosition(0, 1), RelativePosition(-1, 2)]
+    )
+
+    RIGHT_JUMP_DOWN = Direction(
+        name="Right-Jump-Down",
+        relative_position=RelativePosition(2, 2),
+        occupied=[RelativePosition(0, 2)],
+        blocked=[RelativePosition(0, 3)],
+        not_blocked=[RelativePosition(0, 1), RelativePosition(1, 2)]
+    )
+
+    UP = Direction(
+        name="Up",
+        relative_position=RelativePosition(-2, 0),
+        not_occupied=[RelativePosition(-2, 0)],
+        not_blocked=[RelativePosition(-1, 0)]
+    )
+
+    UP_JUMP = Direction(
+        name="Up-Jump",
+        relative_position=RelativePosition(-4, 0),
+        occupied=[RelativePosition(-2, 0)],
+        not_blocked=[RelativePosition(-1, 0), RelativePosition(-3, 0)]
+    )
+
+    UP_JUMP_LEFT = Direction(
+        name="Up-Jump-Left",
+        relative_position=RelativePosition(-2, -2),
+        occupied=[RelativePosition(-2, 0)],
+        blocked=[RelativePosition(-3, 0)],
+        not_blocked=[RelativePosition(-1, 0), RelativePosition(-2, -1)]
+    )
+
+    UP_JUMP_RIGHT = Direction(
+        name="Up-Jump-Right",
+        relative_position=RelativePosition(-2, 2),
+        occupied=[RelativePosition(-2, 0)],
+        blocked=[RelativePosition(-3, 0)],
+        not_blocked=[RelativePosition(-1, 0), RelativePosition(-2, 1)]
+    )
+
+    DOWN = Direction(
+        name="Down",
+        relative_position=RelativePosition(2, 0),
+        not_occupied=[RelativePosition(2, 0)],
+        not_blocked=[RelativePosition(1, 0)]
+    )
+
+    DOWN_JUMP = Direction(
+        name="Down-Jump",
+        relative_position=RelativePosition(4, 0),
+        occupied=[RelativePosition(2, 0)],
+        not_blocked=[RelativePosition(1, 0), RelativePosition(3, 0)]
+    )
+
+    DOWN_JUMP_LEFT = Direction(
+        name="Down-Jump-Left",
+        relative_position=RelativePosition(2, -2),
+        occupied=[RelativePosition(2, 0)],
+        blocked=[RelativePosition(3, 0)],
+        not_blocked=[RelativePosition(1, 0), RelativePosition(2, -1)]
+    )
+
+    DOWN_JUMP_RIGHT = Direction(
+        name="Down-Jump-Right",
+        relative_position=RelativePosition(2, 2),
+        occupied=[RelativePosition(2, 0)],
+        blocked=[RelativePosition(3, 0)],
+        not_blocked=[RelativePosition(1, 0), RelativePosition(2, 1)]
+    )
 
 class Player():
     def __init__(self, position, tiles):
