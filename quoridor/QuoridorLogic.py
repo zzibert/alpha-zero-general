@@ -240,9 +240,6 @@ class Tile ():
         return set(block_list)
 
 
-
-
-
 class Board ():
     def __init__(self, white_player, black_player, occupancy):
         self.white_player=white_player
@@ -310,22 +307,43 @@ class Board ():
             return 1
         else:
             return -1
+        
+    def is_move_valid(self, player_id, move) -> bool:
+        if player_id == PlayerId.WHITE.value:
+            is_within_bounds = move.relative_position.transform(self.white_player.position).is_within_bounds()
+
+            return (
+                is_within_bounds and
+                move.condition.is_condition_met(
+                    player_position=self.white_player.position,
+                    opponent_position=self.black_player.position,
+                    occupancy=self.occupancy
+                )
+            )
+        else:
+            is_within_bounds = move.relative_position.transform(self.black_player.position).is_within_bounds()
+
+            return (
+                is_within_bounds and
+                    move.condition.is_condition_met(
+                    player_position=self.black_player.position,
+                    opponent_position=self.white_player.position,
+                    occupancy=self.occupancy
+                )
+            )
             
-    
-        
-
-
-
-
-        
-
-
-
-    def get_valid_moves(self):
+    def get_valid_moves(self, player_id):
         """Returns all the valid moves for the given color.
-        (1 for white, -1 for black)     
+        (1 for white, -1 for black)
         """
-        moves = Set()
+        # [Position(x=self.x, y=self.y+i) for i in range(3)]
+        # First lets just do moves
+        return [int(self.is_move_valid(player_id, move.value)) for move in DirectionType]
+
+
+
+
+
 
 
 

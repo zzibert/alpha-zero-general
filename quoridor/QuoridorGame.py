@@ -22,6 +22,7 @@ class QuoridorGame(Game):
     
     def getActionSize(self):
         # return all possible moves and tile placements
+        # 64 - all possible tile placements
         return len(DirectionType)
 
     
