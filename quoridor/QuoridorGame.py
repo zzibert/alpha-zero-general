@@ -2,7 +2,7 @@ from __future__ import print_function
 import sys
 sys.path.append('..')
 from Game import Game
-from .QuoridorLogic import Board
+from .QuoridorLogic import Board, DirectionType
 import numpy as np
 
 class QuoridorGame(Game):
@@ -22,14 +22,19 @@ class QuoridorGame(Game):
     
     def getActionSize(self):
         # return all possible moves and tile placements
-        pass
+        return len(DirectionType)
 
     
     def getGameEnded(self, board, player):
-        # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
-        # player = 1
-        if board.isGameCompleted():
-            return board.getGameResult(player)
+        if board.is_game_completed():
+            result = board.get_game_result()
+            if result == 0.5:
+                return result
+            elif player == result:
+                return 1
+            else:
+                return -1
+
         else:
             return 0
 

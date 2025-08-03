@@ -15,8 +15,8 @@ from enum import Enum
 from typing import List, Set
 
 class PlayerId(Enum):
-    WHITE = 0
-    BLACK = 1
+    WHITE = 1
+    BLACK = -1
 
 class Position():
     def __init__(self, x: int, y: int):
@@ -39,7 +39,7 @@ white_starting_position = Position(16, 8)
 black_starting_position = Position(0, 8)
 
 def get_starting_position(player_id) -> Position:
-    if (player_id == PlayerId.WHITE):
+    if (player_id == PlayerId.WHITE.value):
         return white_starting_position
     else: 
         return black_starting_position
@@ -250,15 +250,16 @@ class Board ():
         self.occupancy=occupancy
 
     def get_player(self, player_id: int) -> Player:
-        if player_id == PlayerId.WHITE:
+        if player_id == PlayerId.WHITE.value:
             return self.white_player
         else:
             return self.black_player
         
     def place_tile(self, player_id, tile: Tile):
-        new_occupancy = self.occupancy.update(tile.occupancy)
+        new_occupancy = self.occupancy.copy()
+        new_occupancy.update(tile.occupancy())
 
-        if player_id == PlayerId.WHITE:
+        if player_id == PlayerId.WHITE.value:
             return Board(
                 white_player=self.white_player.decrement_tiles(),
                 black_player=self.black_player,
@@ -274,7 +275,7 @@ class Board ():
 
         
     def make_move(self, player_id: int, position: Position):
-        if (player_id == PlayerId.WHITE):
+        if (player_id == PlayerId.WHITE.value):
             white_player = Player(position=position, tiles=self.white_player.tiles)
             return Board(
                 white_player=white_player,
@@ -291,9 +292,26 @@ class Board ():
     
     def make_action(self, player_id, action):
         if action.isMove:
-            return make_move(player_id, action.position)
+            return self.make_move(player_id, action.position)
         else:
-            return place_tile(player_id, Tile(isHorizontal=action.isHorizontal, position=action.position))
+            return self.place_tile(player_id, Tile(isHorizontal=action.isHorizontal, position=action.position))
+        
+    def is_game_completed(self) -> bool:
+        return self.white_player.position.x == 0 or self.black_player.position.x == 16
+    
+    # First call is_game_completed
+    # result 1 : white won
+    # result -1 : black won
+    # result 0/5 : draw
+    def get_game_result(self) -> float:
+        if self.white_player.position.x == 0 and self.black_player.position.x == 16:
+            return 0.5
+        elif self.white_player.position == 0:
+            return 1
+        else:
+            return -1
+            
+    
         
 
 
